@@ -1,19 +1,12 @@
-import { useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import illustrationImg from "../assets/images/illustration.svg"
 import logImg from "../assets/images/logo.svg"
-import googleIconImg from "../assets/images/google-icon.svg"
 
 import "../styles/auth.scss";
 import { Button } from "../components/Button";
 
-export function Home() {
-
-  const history = useHistory()
-
-  function navigateToNewRoom() {
-    history.push("/rooms/new")
-  }
+export function NewRoom() {
 
   return (
     <div id="page-auth">
@@ -25,22 +18,22 @@ export function Home() {
       <main>
         <div className="main-container">
           <img src={logImg} alt="Letmeask" />
-          <button className="create-room" onClick={navigateToNewRoom}>
-            <img src={googleIconImg} alt="Google logo" />
-            Create a chat room with Google
-          </button>
-
-          <div className="separator">or enter in an existing chat room</div>
+          
+          <h2>Create a new room</h2>
 
           <form>
             <input 
               type="text" 
-              placeholder="Enter the room code"
+              placeholder="Room name"
             />
             <Button type="submit">
-              Enter
+              Create room
             </Button>
           </form>
+
+          <p>
+            If you want to enter in an existing room, <Link to="/">clique here</Link>
+          </p>
         </div>
       </main>
     </div>
