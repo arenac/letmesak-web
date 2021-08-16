@@ -1,17 +1,22 @@
 import { useHistory } from 'react-router-dom'
 
-import illustrationImg from "../assets/images/illustration.svg"
-import logImg from "../assets/images/logo.svg"
-import googleIconImg from "../assets/images/google-icon.svg"
+import illustrationImg from "assets/images/illustration.svg"
+import logImg from "assets/images/logo.svg"
+import googleIconImg from "assets/images/google-icon.svg"
 
-import "../styles/auth.scss";
-import { Button } from "../components/Button";
+import "styles/auth.scss";
+import { Button } from "components/Button";
+import { useAuth } from 'hooks/useAuth';
 
 export function Home() {
-
   const history = useHistory()
 
-  function navigateToNewRoom() {
+ const { user, signInWithGoogle } = useAuth()
+
+  async function handleCreateRoom() {
+    if(!user) {
+      await signInWithGoogle()
+    }
     history.push("/rooms/new")
   }
 
@@ -25,7 +30,7 @@ export function Home() {
       <main>
         <div className="main-container">
           <img src={logImg} alt="Letmeask" />
-          <button className="create-room" onClick={navigateToNewRoom}>
+          <button className="create-room" onClick={handleCreateRoom}>
             <img src={googleIconImg} alt="Google logo" />
             Create a chat room with Google
           </button>
