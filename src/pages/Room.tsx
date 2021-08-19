@@ -7,6 +7,7 @@ import 'styles/rooms.scss'
 import { FormEvent, useEffect, useState } from 'react'
 import { useAuth } from 'hooks/useAuth'
 import { database } from 'services/firebase'
+import { Question } from 'components/Question'
 
 type FirebaseQuestions = Record<string, {
   author: {
@@ -18,7 +19,7 @@ type FirebaseQuestions = Record<string, {
   isHighlighted: boolean;
 }>;
 
-type Question = {
+type QuestionType = {
   id: string;
   author: {
     name: string;
@@ -35,7 +36,7 @@ type RoomParams = {
 
 export function Room() {
   const [newQuestion, setNewQuestion] = useState('')
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [title, setTitle] = useState('');
 
   const params = useParams<RoomParams>()
@@ -123,8 +124,16 @@ export function Room() {
             <Button type="submit" disabled={!user}>Send question</Button>
           </div>
         </form>
-
-        {JSON.stringify(questions)}
+        
+        <div className="question-list">
+          {questions.map(question => (
+            <Question 
+              key={question.id}
+              content={question.content}
+              author={question.author} 
+            />
+          ))}
+        </div>
       </main>
     </div>  
   )
