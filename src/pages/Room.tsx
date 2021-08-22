@@ -1,10 +1,10 @@
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import logoImg from 'assets/images/logo.svg'
 import { Button } from 'components/Button'
 import { RoomCode } from 'components/RoomCode'
 
 import 'styles/rooms.scss'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { useAuth } from 'hooks/useAuth'
 import { database } from 'services/firebase'
 import { Question } from 'components/Question'
@@ -17,12 +17,26 @@ type RoomParams = {
 export function Room() {
   const [newQuestion, setNewQuestion] = useState('')
   
+  const history = useHistory()
 
-  const { user } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const params = useParams<RoomParams>()
   const roomId = params.id;
 
-  const { questions, title } = useRoom(roomId);
+  const { questions, title, authorId, endedAt } = useRoom(roomId);
+
+  useEffect(() => {
+     if(authorId === user?.id) {
+       history.push(`/admin/rooms/${roomId}`)
+     }
+  }, [history, authorId, roomId, user?.id])
+
+  useEffect(() => {
+    if(endedAt) {
+      alert('Room ended!')
+      history.push('/');
+    }
+  }, [endedAt, history])
 
   async function handleSendQuestion(event: FormEvent) {
     event.preventDefault();
@@ -60,6 +74,12 @@ export function Room() {
     }
   }
 
+  async function handleLogin() {
+    if(!user) {
+      await signInWithGoogle()
+    }
+  }
+
   return (
     <div id="page-room">
       <header>
@@ -88,9 +108,9 @@ export function Room() {
                 <span>{user.name}</span>
               </div>
             ) : (
-              <span>To ask question, <button>login here</button>.</span>
+              <span>To ask question, <button onClick={handleLogin}>login here</button>.</span>
             ) }
-            <Button type="submit" disabled={!user}>Send question</Button>
+            <Button type="submit" disabled={!user || !!endedAt}>Send question</Button>
           </div>
         </form>
         
@@ -109,6 +129,7 @@ export function Room() {
                   type="button"
                   aria-label="Mark as I like it"
                   onClick={() => handleLikeQuestion(question.id, question.likeId)}
+                  disabled={!!endedAt}
                 >
                   {question.likeCount > 0 && <span>{question.likeCount}</span>}
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -123,3 +144,4 @@ export function Room() {
     </div>  
   )
 }
+

@@ -97,6 +97,13 @@
 
     .question-list {
       margin-top: 32px;
+
+      button {
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
     }
   }
 }

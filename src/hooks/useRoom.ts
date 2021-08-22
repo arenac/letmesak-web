@@ -32,13 +32,15 @@ export function useRoom(roomId: string ) {
   const { user } = useAuth()
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [title, setTitle] = useState('');
+  const [authorId, setAuthorId] = useState('');
+  const [endedAt, setEndedAt] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const roomRef = database.ref(`rooms/${roomId}`);
     
     roomRef.on('value', room => {
       const databaseRoom = room.val();
-      const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {};
+      const firebaseQuestions: FirebaseQuestions = databaseRoom?.questions ?? {};
       const parsedQuestions = Object.entries(firebaseQuestions).map(([key, value]) => {
         return {
           id: key,
@@ -53,6 +55,8 @@ export function useRoom(roomId: string ) {
       
       setQuestions(parsedQuestions);
       setTitle(databaseRoom.title);
+      setAuthorId(databaseRoom.authorId);
+      setEndedAt(databaseRoom.endedAt)
     });
 
     return () => {
@@ -61,5 +65,5 @@ export function useRoom(roomId: string ) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, user?.id]);
 
-  return { questions, title }
+  return { questions, title, authorId, endedAt }
 }
